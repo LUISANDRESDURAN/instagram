@@ -7,13 +7,10 @@ import {
   signOut 
 } from 'firebase/auth';
 import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { initializeApp } from 'firebase/app';
-import firebaseConfig from './firebaseConfig';
-
+import  { app, db} from './firebaseConfig';
+import {getAuth} from 'firebase/auth'
 // Inicializa Firebase una sola vez
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+
 
 export const AuthContext = createContext({});
 
