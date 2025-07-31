@@ -1,49 +1,48 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { doc, getDoc } from "firebase/firestore";
-import { useEffect } from 'react';
-import app from './firebaseConfig';
-
-export default function App() {
-  useEffect(() => {
-    console.log("xd");
-    
-    const fetchData = async () => {
-
-      try {
+import React, { useContext } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { AuthContext, AuthProvider } from './authContext.jsx';
+import LoginScreen from './screens/LoginScreen';
+import RegisterScreen from './screens/RegisterScreen';
 
 
+const Stack = createNativeStackNavigator();
 
+function AppNav() {
+  const { user, loading } = useContext(AuthContext);
+  if (loading) return null; // o un Splash
 
-      const docRef = doc(app, "users", "WhD4qzolOgu6td38Ru6p");
-      const docSnap = await getDoc(docRef); 
-
-      if (docSnap.exists()) {
-        console.log("Document data:", docSnap.data());
-      } else {
-        console.log("No such document!");
-      }
-
-      } catch (error) {
-        console.error("Error fetching document:", error); 
-      }
-    };
-    fetchData();
-  }, []);
   return (
-    
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        {user
+          ? (
+            // Usuario autenticado
+            <Stack.Screen name="Home" component={HomeScreen} />
+          ) : (
+            // No autenticado
+            <>
+              <Stack.Screen 
+                name="Login" 
+                component={LoginScreen} 
+                options={{ title: 'Iniciar Sesión' }} 
+              />
+              <Stack.Screen 
+                name="Register" 
+                component={RegisterScreen} 
+                options={{ title: 'Registro' }} 
+              />
+            </>
+          )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppNav />
+    </AuthProvider>
+  );
+}
